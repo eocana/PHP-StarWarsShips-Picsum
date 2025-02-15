@@ -2,7 +2,7 @@
     "name": "deck/actuasolutions_pt",
     "autoload": {
         "psr-4": {
-            "Deck\\ActuasolutionsPt\\": "public/"
+            "App\\": "includes/"
         }
     },
     "authors": [
