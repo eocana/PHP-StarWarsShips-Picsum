@@ -1,0 +1,16 @@
+{
+    "name": "deck/actuasolutions_pt",
+    "autoload": {
+        "psr-4": {
+            "Deck\\ActuasolutionsPt\\": "public/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Eric Ocaña Segura"
+        }
+    ],
+    "require": {
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
