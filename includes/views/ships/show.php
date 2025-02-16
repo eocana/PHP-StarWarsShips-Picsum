@@ -7,7 +7,22 @@
         .ship-details { max-width: 800px; margin: 0 auto; }
         .detail-group { margin: 20px 0; }
         .detail-label { font-weight: bold; }
-        .actions { margin-top: 20px; }
+        .actions { 
+            margin-top: 20px; 
+            padding: 10px;
+        }
+        .delete-btn {
+            background-color: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .actions a, .actions form { 
+            display: inline-block; 
+            margin-right: 10px; 
+        }
     </style>
 </head>
 <body>
@@ -45,6 +60,12 @@
         <div class="actions">
             <a href="/ships">Volver</a> |
             <a href="/ships/edit/<?= $ship['id'] ?>">Editar</a>
+            <form action="/ships/delete/<?= $ship['id'] ?>" method="POST" style="display:inline;">
+            <input type="hidden" name="_method" value="DELETE">
+            <button type="submit" class="delete-btn" onclick="return confirm('¿Estás seguro de eliminar esta nave?');">
+                Eliminar
+            </button>
+        </form>
         </div>
     </div>
 </body>

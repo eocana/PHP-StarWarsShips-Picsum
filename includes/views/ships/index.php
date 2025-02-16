@@ -11,6 +11,14 @@
         th, td { border: 1px solid black; padding: 10px; text-align: left; }
         th { background-color: #f2f2f2; }
         .actions a, .actions form { display: inline-block; margin-right: 10px; }
+        .add-button {
+        float: right;
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+    }
     </style>
 </head>
 <body>
@@ -20,7 +28,7 @@
             <tr>
                 <th>Nombre</th>
                 <th>Modelo</th>
-                <th></th>
+                <th><a href="/ships/add" class="add-button">Añadir nave</a></th>
             </tr>
         </thead>
         <tbody>

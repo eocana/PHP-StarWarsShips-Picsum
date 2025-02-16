@@ -42,7 +42,7 @@ if ($dbExists && $hasData) {
     Router::get('ships/show/{id}', [ShipController::class, 'show']);
     Router::get('ships/edit/{id}', [ShipController::class, 'edit']);
     Router::post('ships/update/{id}', [ShipController::class, 'update']);
-    Router::post('ships/delete/{id}', [ShipController::class, 'delete']);
+    Router::delete('ships/delete/{id}', [ShipController::class, 'delete']);
     Router::get('ships/add', [ShipController::class, 'create']);
     Router::post('ships/add', [ShipController::class, 'store']);
     Router::dispatch();

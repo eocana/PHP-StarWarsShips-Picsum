@@ -2,7 +2,12 @@
 namespace App\Core;
 
 class Router {
-    private static array $routes = [];
+    private static array $routes = [
+        'GET' => [],
+        'POST' => [],
+        'PUT' => [],
+        'DELETE' => []
+    ];
 
     public static function get(string $route, callable|array $callback) {
         self::$routes['GET'][$route] = $callback;

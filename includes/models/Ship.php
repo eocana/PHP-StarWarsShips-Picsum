@@ -2,11 +2,11 @@
 namespace App\Models;
 
 class Ship {
-    public int $id;
+    public ?int $id;
     public string $name;
     public string $model;
-    public int $manufacturer_id;
-    public int $starship_class_id;
+    public ?int $manufacturer_id;
+    public ?int $starship_class_id;
     public ?int $cost_in_credits;
     public ?float $length;
     public ?int $max_speed;
@@ -21,10 +21,23 @@ class Ship {
     public ?string $api_url;
 
     public function __construct(
-        int $id, string $name, string $model, int $manufacturer_id, int $starship_class_id,
-        ?int $cost_in_credits, ?float $length, ?int $max_speed, ?string $crew, ?int $passengers,
-        ?int $cargo_capacity, ?string $consumables, ?float $hyperdrive_rating, ?int $mglt,
-        ?string $created_at, ?string $edited_at, ?string $api_url
+        ?int $id,
+        string $name,
+        string $model,
+        ?int $manufacturer_id,
+        ?int $starship_class_id,
+        ?int $cost_in_credits = null,
+        ?float $length = null,
+        ?int $max_speed = null,
+        ?string $crew = null,
+        ?int $passengers = null,
+        ?int $cargo_capacity = null,
+        ?string $consumables = null,
+        ?float $hyperdrive_rating = null,
+        ?int $mglt = null,
+        ?string $created_at = null,
+        ?string $edited_at = null,
+        ?string $api_url = null
     ) {
         $this->id = $id;
         $this->name = $name;

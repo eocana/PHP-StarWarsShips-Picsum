@@ -59,7 +59,7 @@ class ShipRepository {
 
     public function getShipById(int $id): ?array {
         $stmt = $this->db->prepare(
-            "SELECT s.*, 
+            "SELECT s.id, s.name, s.model, s.manufacturer_id, s.starship_class_id,
                     m.name AS manufacturer_name,
                     c.class_name AS starship_class,
                     sp.cost_in_credits, sp.length, sp.max_speed, sp.crew, sp.passengers,
@@ -83,6 +83,8 @@ class ShipRepository {
             'id' => $row['id'],
             'name' => htmlspecialchars($row['name'] ?? ''),
             'model' => htmlspecialchars($row['model'] ?? ''),
+            'manufacturer_id' => (int)($row['manufacturer_id'] ?? 0),
+            'starship_class_id' => (int)($row['starship_class_id'] ?? 0),
             'manufacturer_name' => htmlspecialchars($row['manufacturer_name'] ?? ''),
             'starship_class' => htmlspecialchars($row['starship_class'] ?? ''),
             'cost_in_credits' => (int)($row['cost_in_credits'] ?? 0),
@@ -103,16 +105,14 @@ class ShipRepository {
     public function deleteShip(int $id): bool {
         $this->db->exec('BEGIN TRANSACTION');
         try {
-            // Delete from related tables first
-            $tables = ['starship_api_metadata', 'starship_specs', 'starships'];
-            foreach ($tables as $table) {
-                $stmt = $this->db->prepare("DELETE FROM $table WHERE starship_id = :id");
-                $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
-                $stmt->execute();
-            }
+            // CASCADE will handle related tables
+            $stmt = $this->db->prepare("DELETE FROM starships WHERE id = :id");
+            $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
+            $stmt->execute();
+            
             $this->db->exec('COMMIT');
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->db->exec('ROLLBACK');
             return false;
         }
@@ -145,6 +145,23 @@ class ShipRepository {
         return !$stmt->execute()->fetchArray();
     }
 
+    public function getAllManufacturers(): array {
+        $result = $this->db->query("SELECT id, name FROM manufacturers ORDER BY name");
+        $manufacturers = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $manufacturers[] = $row;
+        }
+        return $manufacturers;
+    }
+    
+    public function getAllStarshipClasses(): array {
+        $result = $this->db->query("SELECT id, class_name FROM starship_classes ORDER BY class_name");
+        $classes = [];
+        while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
+            $classes[] = $row;
+        }
+        return $classes;
+    }
     public function updateShip(Ship $ship): bool {
         // Validate foreign keys and unique constraints
         if (!$this->validateManufacturer($ship->manufacturer_id)) {
@@ -221,6 +238,64 @@ class ShipRepository {
         }
     }
     
+    public function addManufacturer(string $name): int {
+        // Begin transaction
+        $this->db->exec('BEGIN TRANSACTION');
+        try {
+            // Check if manufacturer already exists
+            $stmt = $this->db->prepare("SELECT id FROM manufacturers WHERE name = :name");
+            $stmt->bindValue(':name', $name, SQLITE3_TEXT);
+            $result = $stmt->execute()->fetchArray();
+            
+            if ($result) {
+                $this->db->exec('ROLLBACK');
+                return $result['id'];
+            }
+            
+            // Insert new manufacturer
+            $stmt = $this->db->prepare("INSERT INTO manufacturers (name) VALUES (:name)");
+            $stmt->bindValue(':name', htmlspecialchars(strip_tags($name)), SQLITE3_TEXT);
+            $stmt->execute();
+            
+            $newId = $this->db->lastInsertRowID();
+            $this->db->exec('COMMIT');
+            return $newId;
+            
+        } catch (\Exception $e) {
+            $this->db->exec('ROLLBACK');
+            throw $e;
+        }
+    }
+    
+    public function addStarshipClass(string $className): int {
+        // Begin transaction
+        $this->db->exec('BEGIN TRANSACTION');
+        try {
+            // Check if class already exists
+            $stmt = $this->db->prepare("SELECT id FROM starship_classes WHERE class_name = :name");
+            $stmt->bindValue(':name', $className, SQLITE3_TEXT);
+            $result = $stmt->execute()->fetchArray();
+            
+            if ($result) {
+                $this->db->exec('ROLLBACK');
+                return $result['id'];
+            }
+            
+            // Insert new class
+            $stmt = $this->db->prepare("INSERT INTO starship_classes (class_name) VALUES (:name)");
+            $stmt->bindValue(':name', htmlspecialchars(strip_tags($className)), SQLITE3_TEXT);
+            $stmt->execute();
+            
+            $newId = $this->db->lastInsertRowID();
+            $this->db->exec('COMMIT');
+            return $newId;
+            
+        } catch (\Exception $e) {
+            $this->db->exec('ROLLBACK');
+            throw $e;
+        }
+    }
+
     public function addShip(Ship $ship): bool {
         if (!$this->validateManufacturer($ship->manufacturer_id)) {
             throw new \InvalidArgumentException("Invalid manufacturer_id");
