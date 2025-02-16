@@ -3,13 +3,13 @@
 ## Descripción
 Este proyecto es una aplicación web desarrollada en PHP con SQLite que permite gestionar una base de datos de naves espaciales. Proporciona funcionalidades para listar, agregar, editar y eliminar naves mediante un sistema basado en rutas y controladores.
 
-## Tecnologías Utilizadas
+## Tecnologías utilizadas
 - **PHP** (sin framework, arquitectura MVC simple)
 - **SQLite** (base de datos ligera)
 - **Composer** (gestión de dependencias)
 - **Dotenv** (manejo de variables de entorno)
 
-## Estructura del Proyecto
+## Estructura del proyecto
 ```
 ACTUASOLUTIONS
 │── database
@@ -40,7 +40,7 @@ ACTUASOLUTIONS
 │── naves.csv                   # Archivo de datos CSV
 ```
 
-## Instalación y Configuración
+## Instalación y configuración
 ### 1. Clonar el repositorio
 ```bash
 git clone https://github.com/tuusuario/proyecto-naves.git
