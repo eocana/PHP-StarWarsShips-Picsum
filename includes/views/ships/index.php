@@ -1,34 +1,20 @@
-<?php
-?>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Naves</title>
-    <style>
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid black; padding: 10px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .actions a, .actions form { display: inline-block; margin-right: 10px; }
-        .add-button {
-        float: right;
-        padding: 10px 20px;
-        background-color: #4CAF50;
-        color: white;
-        text-decoration: none;
-        border-radius: 4px;
-    }
-    </style>
-</head>
-<body>
+<?php $title = 'Lista de naves'; ?>
+<?php require __DIR__ . '/../layouts/header.php'; ?>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
     <h2>Lista de naves</h2>
-    <table>
-        <thead>
+    <a href="/ships/add" class="btn btn-success">
+        <i class="fas fa-plus"></i> Añadir nave
+    </a>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead class="table-light">
             <tr>
                 <th>Nombre</th>
                 <th>Modelo</th>
-                <th><a href="/ships/add" class="add-button">Añadir nave</a></th>
+                <th>Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -36,17 +22,27 @@
                 <tr>
                     <td><?= htmlspecialchars($ship['name']) ?></td>
                     <td><?= htmlspecialchars($ship['model']) ?></td>
-                    <td class="actions">
-                        <a href="/ships/show/<?= $ship['id'] ?>">Ver</a>
-                        <a href="/ships/edit/<?= $ship['id'] ?>">Editar</a>
-                        <form action="/ships/delete/<?= $ship['id'] ?>" method="POST" style="display:inline;">
-                            <input type="hidden" name="_method" value="DELETE">
-                            <button type="submit" onclick="return confirm('¿Estás seguro de eliminar esta nave?');">Eliminar</button>
-                        </form>
+                    <td>
+                        <div class="btn-group">
+                            <a href="/ships/show/<?= $ship['id'] ?>" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="/ships/edit/<?= $ship['id'] ?>" class="btn btn-sm btn-warning">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <form action="/ships/delete/<?= $ship['id'] ?>" method="POST" class="d-inline">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="submit" class="btn btn-sm btn-danger" 
+                                        onclick="return confirm('¿Estás seguro de eliminar esta nave?')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
             <?php endforeach; ?>
         </tbody>
     </table>
-</body>
-</html>
+</div>
+
+<?php require __DIR__ . '/../layouts/footer.php'; ?>

@@ -3,14 +3,26 @@ namespace App\Models;
 
 use SQLite3;
 
+/**
+ * Clase ShipRepository
+ * Maneja la interacción con la base de datos SQLite para las naves espaciales.
+ */
 class ShipRepository {
     private SQLite3 $db;
 
+    /**
+     * Constructor: Inicializa la conexión con la base de datos.
+     */
     public function __construct() {
         $this->db = new SQLite3(__DIR__ . '/../../database/starships.db');
-        $this->db->busyTimeout(5000); // Evita bloqueos
+        $this->db->busyTimeout(5000); // Evita bloqueos en la base de datos.
     }
 
+    /**
+     * Obtiene todas las naves con sus detalles completos.
+     * 
+     * @return array Lista de naves.
+     */
     public function getAllShips(): array {
         $stmt = $this->db->prepare(
             "SELECT s.id, s.name, s.model,
@@ -25,14 +37,15 @@ class ShipRepository {
              LEFT JOIN starship_specs sp ON s.id = sp.starship_id
              LEFT JOIN starship_api_metadata sa ON s.id = sa.starship_id"
         );
-        
+
         if (!$stmt) {
             return [];
         }
-        
+
         $result = $stmt->execute();
         $ships = [];
-        
+
+        // Recorrer cada fila de la consulta y almacenar en un array asociativo
         while ($row = $result->fetchArray(SQLITE3_ASSOC)) {
             $ships[] = [
                 'id' => $row['id'],
@@ -57,6 +70,12 @@ class ShipRepository {
         return $ships;
     }
 
+    /**
+     * Obtiene una nave por su ID.
+     * 
+     * @param int $id ID de la nave.
+     * @return array|null Datos de la nave o null si no existe.
+     */
     public function getShipById(int $id): ?array {
         $stmt = $this->db->prepare(
             "SELECT s.id, s.name, s.model, s.manufacturer_id, s.starship_class_id,
@@ -72,13 +91,13 @@ class ShipRepository {
              LEFT JOIN starship_api_metadata sa ON s.id = sa.starship_id
              WHERE s.id = :id"
         );
-        
+
         $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
         $result = $stmt->execute();
         $row = $result->fetchArray(SQLITE3_ASSOC);
-        
+
         if (!$row) return null;
-        
+
         return [
             'id' => $row['id'],
             'name' => htmlspecialchars($row['name'] ?? ''),
@@ -102,14 +121,19 @@ class ShipRepository {
         ];
     }
 
+    /**
+     * Elimina una nave por su ID.
+     * 
+     * @param int $id ID de la nave a eliminar.
+     * @return bool True si la eliminación fue exitosa, false en caso de error.
+     */
     public function deleteShip(int $id): bool {
         $this->db->exec('BEGIN TRANSACTION');
         try {
-            // CASCADE will handle related tables
             $stmt = $this->db->prepare("DELETE FROM starships WHERE id = :id");
             $stmt->bindValue(':id', $id, SQLITE3_INTEGER);
             $stmt->execute();
-            
+
             $this->db->exec('COMMIT');
             return true;
         } catch (\Exception $e) {
@@ -117,34 +141,12 @@ class ShipRepository {
             return false;
         }
     }
-    
-    private function validateManufacturer(?int $manufacturerId): bool {
-        if (!$manufacturerId) return true;
-        $stmt = $this->db->prepare("SELECT id FROM manufacturers WHERE id = :id");
-        $stmt->bindValue(':id', $manufacturerId, SQLITE3_INTEGER);
-        return (bool) $stmt->execute()->fetchArray();
-    }
-    
-    private function validateStarshipClass(?int $classId): bool {
-        if (!$classId) return true;
-        $stmt = $this->db->prepare("SELECT id FROM starship_classes WHERE id = :id");
-        $stmt->bindValue(':id', $classId, SQLITE3_INTEGER);
-        return (bool) $stmt->execute()->fetchArray();
-    }
-    
-    private function isNameUnique(string $name, ?int $excludeId = null): bool {
-        $sql = "SELECT id FROM starships WHERE name = :name";
-        if ($excludeId) {
-            $sql .= " AND id != :id";
-        }
-        $stmt = $this->db->prepare($sql);
-        $stmt->bindValue(':name', $name, SQLITE3_TEXT);
-        if ($excludeId) {
-            $stmt->bindValue(':id', $excludeId, SQLITE3_INTEGER);
-        }
-        return !$stmt->execute()->fetchArray();
-    }
 
+    /**
+     * Obtiene la lista de fabricantes de naves.
+     * 
+     * @return array Lista de fabricantes.
+     */
     public function getAllManufacturers(): array {
         $result = $this->db->query("SELECT id, name FROM manufacturers ORDER BY name");
         $manufacturers = [];
@@ -153,7 +155,12 @@ class ShipRepository {
         }
         return $manufacturers;
     }
-    
+
+    /**
+     * Obtiene la lista de clases de naves.
+     * 
+     * @return array Lista de clases de naves.
+     */
     public function getAllStarshipClasses(): array {
         $result = $this->db->query("SELECT id, class_name FROM starship_classes ORDER BY class_name");
         $classes = [];
@@ -162,7 +169,65 @@ class ShipRepository {
         }
         return $classes;
     }
+
+    /**
+     * Valida si existe un fabricante con el ID dado
+     *
+     * @param int $manufacturerId ID del fabricante a validar
+     * @return bool True si el fabricante existe
+     */
+    private function validateManufacturer(int $manufacturerId): bool {
+        $stmt = $this->db->prepare("SELECT id FROM manufacturers WHERE id = :id");
+        $stmt->bindValue(':id', $manufacturerId, SQLITE3_INTEGER);
+        $result = $stmt->execute()->fetchArray();
+        return !empty($result);
+    }
+
+    /**
+     * Valida si existe una clase de nave con el ID dado
+     *
+     * @param int $classId ID de la clase a validar
+     * @return bool True si la clase existe
+     */
+    private function validateStarshipClass(int $classId): bool {
+        $stmt = $this->db->prepare("SELECT id FROM starship_classes WHERE id = :id");
+        $stmt->bindValue(':id', $classId, SQLITE3_INTEGER);
+        $result = $stmt->execute()->fetchArray();
+        return !empty($result);
+    }
+
+    /**
+     * Verifica si el nombre de la nave es único
+     *
+     * @param string $name Nombre a verificar
+     * @param int|null $excludeId ID de la nave a excluir (para edición)
+     * @return bool True si el nombre es único
+     */
+    private function isNameUnique(string $name, ?int $excludeId = null): bool {
+        $sql = "SELECT id FROM starships WHERE name = :name";
+        if ($excludeId !== null) {
+            $sql .= " AND id != :exclude_id";
+        }
+        
+        $stmt = $this->db->prepare($sql);
+        $stmt->bindValue(':name', $name, SQLITE3_TEXT);
+        
+        if ($excludeId !== null) {
+            $stmt->bindValue(':exclude_id', $excludeId, SQLITE3_INTEGER);
+        }
+        
+        $result = $stmt->execute()->fetchArray();
+        return empty($result);
+    }
+    /**
+     * Actualiza una nave existente en la base de datos
+     *
+     * @param Ship $ship Objeto nave con los datos actualizados
+     * @return bool True si la actualización fue exitosa
+     * @throws \InvalidArgumentException Si el fabricante o clase de nave no son válidos
+    */
     public function updateShip(Ship $ship): bool {
+
         // Validate foreign keys and unique constraints
         if (!$this->validateManufacturer($ship->manufacturer_id)) {
             throw new \InvalidArgumentException("Invalid manufacturer_id");
@@ -171,7 +236,7 @@ class ShipRepository {
             throw new \InvalidArgumentException("Invalid starship_class_id");
         }
         if (!$this->isNameUnique($ship->name, $ship->id)) {
-            throw new \InvalidArgumentException("Ship name must be unique");
+            throw new \InvalidArgumentException("El nombre de la nave es debe ser único");
         }
 
 
@@ -237,7 +302,13 @@ class ShipRepository {
             return false;
         }
     }
-    
+    /**
+     * Añade un nuevo fabricante o devuelve el ID si ya existe
+     *
+     * @param string $name Nombre del fabricante
+     * @return int ID del fabricante (nuevo o existente)
+     * @throws \Exception Si hay un error en la inserción
+     */
     public function addManufacturer(string $name): int {
         // Begin transaction
         $this->db->exec('BEGIN TRANSACTION');
@@ -266,7 +337,14 @@ class ShipRepository {
             throw $e;
         }
     }
-    
+
+    /**
+     * Añade una nueva clase de nave o devuelve el ID si ya existe
+     *
+     * @param string $className Nombre de la clase de nave
+     * @return int ID de la clase (nueva o existente)
+     * @throws \Exception Si hay un error en la inserción
+     */   
     public function addStarshipClass(string $className): int {
         // Begin transaction
         $this->db->exec('BEGIN TRANSACTION');
@@ -296,6 +374,14 @@ class ShipRepository {
         }
     }
 
+    /**
+     * Añade una nueva nave a la base de datos
+     *
+     * @param Ship $ship Objeto nave con los datos a insertar
+     * @return bool True si la inserción fue exitosa
+     * @throws \InvalidArgumentException Si el fabricante o clase no son válidos
+     * @throws \InvalidArgumentException Si el nombre de la nave no es único
+     */
     public function addShip(Ship $ship): bool {
         if (!$this->validateManufacturer($ship->manufacturer_id)) {
             throw new \InvalidArgumentException("Invalid manufacturer_id");
