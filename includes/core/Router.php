@@ -29,11 +29,25 @@ class Router {
             $method = strtoupper($_POST['_method']);
         }
 
-        if (isset(self::$routes[$method][$uri])) {
-            call_user_func(self::$routes[$method][$uri]);
-        } else {
-            http_response_code(404);
-            echo "Página no encontrada";
+        foreach (self::$routes[$method] as $route => $callback) {
+            // Convertir parámetros {id} en expresiones regulares
+            $pattern = preg_replace('/{([^}]+)}/', '([^/]+)', str_replace('/', '\/', $route));
+            
+            if (preg_match("#^$pattern$#", $uri, $matches)) {
+                array_shift($matches); // Quitamos el primer match (ruta completa)
+                
+                // Si es un controlador, instanciarlo correctamente
+                if (is_array($callback)) {
+                    [$controller, $method] = $callback;
+                    $instance = new $controller(); // Crear instancia
+                    return call_user_func_array([$instance, $method], $matches);
+                }
+                
+                return call_user_func_array($callback, $matches);
+            }
         }
+
+        http_response_code(404);
+        echo "Página no encontrada";
     }
 }

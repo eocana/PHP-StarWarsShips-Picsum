@@ -5,7 +5,10 @@
         "psr-4": {
             "App\\": "includes/",
             "App\\Core\\": "includes/core/",
-            "App\\Controllers\\": "includes/controllers/"
+            "App\\Controllers\\": "includes/controllers/",
+            "App\\Models\\": "includes/models/",
+            "App\\Views\\": "includes/views/"
+            
         }
     },
     "authors": [
