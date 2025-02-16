@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS starships (
 CREATE TABLE IF NOT EXISTS starship_specs (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     starship_id INTEGER NOT NULL,
-    cost_in_credits INTEGER,
+    cost_in_credits INTEGER NULL,
     length REAL,
     max_speed INTEGER,
     crew TEXT,

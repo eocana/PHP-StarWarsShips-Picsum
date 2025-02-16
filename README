@@ -1,0 +1,85 @@
+# Naves Star Wars   
+
+## Descripción
+Este proyecto es una aplicación web desarrollada en PHP con SQLite que permite gestionar una base de datos de naves espaciales. Proporciona funcionalidades para listar, agregar, editar y eliminar naves mediante un sistema basado en rutas y controladores.
+
+## Tecnologías utilizadas
+- **PHP** (sin framework, arquitectura MVC simple)
+- **SQLite** (base de datos ligera)
+- **Composer** (gestión de dependencias)
+- **Dotenv** (manejo de variables de entorno)
+
+## Estructura del proyecto
+```
+ACTUASOLUTIONS
+│── database
+│   │── schema.sql        # Esquema de la base de datos
+│   │── starships.db      # Base de datos SQLite
+│── includes
+│   │── controllers
+│   │   │── ShipController.php  # Controlador de naves
+│   │── core
+│   │   │── Router.php         # Sistema de rutas
+│   │── models
+│   │   │── Ship.php           # Modelo de nave
+│   │   │── ShipRepository.php # Repositorio de datos
+│   │── views
+│   │   │── layouts
+│   │   │── ships
+│   │── db.php                 # Conexión con la base de datos
+│── public
+│   │── index.php              # Punto de entrada de la app
+│   │── setup.php              # Script de configuración inicial
+│── scripts
+│   │── import_csv.php         # Importador de datos desde CSV
+│── vendor                     # Dependencias de Composer
+│── .env                        # Variables de entorno
+│── .gitignore                  # Archivos ignorados en Git
+│── composer.json               # Configuración de Composer
+│── migrations.php              # Script de migraciones
+│── naves.csv                   # Archivo de datos CSV
+```
+
+## Instalación y configuración
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/tuusuario/proyecto-naves.git
+cd proyecto-naves
+```
+
+### 2. Instalar dependencias
+```bash
+composer install
+```
+
+### 3. Configurar variables de entorno
+Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+```
+DB_PATH=database/starships.db
+```
+
+### 4. Configurar la base de datos
+Ejecutar el siguiente comando para crear la base de datos y cargar el esquema:
+```bash
+php public/setup.php
+```
+
+### 5. Importar datos desde CSV (Opcional)
+```bash
+php scripts/import_csv.php
+```
+
+## Uso
+- Acceder a la aplicación desde el navegador:
+```
+http://localhost:9999
+```
+
+- Endpoints principales:
+  - `GET /ships` → Listar naves
+  - `GET /ships/{id}` → Mostrar detalles de una nave
+  - `GET /ships/edit/{id}` → Editar una nave
+  - `POST /ships/store` → Guardar una nueva nave
+  - `POST /ships/update/{id}` → Actualizar una nave
+  - `POST /ships/delete/{id}` → Eliminar una nave
+
