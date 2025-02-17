@@ -40,34 +40,34 @@ ACTUASOLUTIONS
 │── naves.csv                   # Archivo de datos CSV
 ```
 
-## Instalación y configuración
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/tuusuario/proyecto-naves.git
-cd proyecto-naves
-```
+## ⚙️ Instalación y Configuración
 
-### 2. Instalar dependencias
-```bash
-composer install
-```
+1. **Clonar el repositorio:**
+   ```sh
+   git clone https://github.com/tuusuario/proyecto-naves.git
+   cd proyecto-naves
+   ```
+2. **Instalar dependencias:**
+   ```sh
+   composer install
+   ```
+3. **Configurar variables de entorno:**
+   Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+   ```ini
+   DB_PATH=database/starships.db
+   ```
+4. **Configurar la base de datos:**
 
-### 3. Configurar variables de entorno
-Crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
-```
-DB_PATH=database/starships.db
-```
+Hay dos opciones desde la web o siguiendo los siguientes pasos:
 
-### 4. Configurar la base de datos
-Ejecutar el siguiente comando para crear la base de datos y cargar el esquema:
-```bash
-php public/setup.php
-```
-
-### 5. Importar datos desde CSV (Opcional)
-```bash
-php scripts/import_csv.php
-```
+   Ejecutar el siguiente comando para crear la base de datos y cargar el esquema:
+   ```sh
+   php migrations.php
+   ```
+5. **Importar datos desde CSV:**
+   ```sh
+   php scripts/import_csv.php
+   ```
 
 ## Uso
 - Acceder a la aplicación desde el navegador:
