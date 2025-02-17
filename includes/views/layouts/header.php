@@ -16,6 +16,11 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="/ships">Star Wars Ships</a>
+            <div class="navbar-nav">
+                <a class="nav-link" href="/picsum">
+                    <i class="fas fa-images"></i> Picsum
+                </a>
+            </div>
         </div>
     </nav>
     <div class="container">
