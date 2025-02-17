@@ -51,8 +51,8 @@ ACTUASOLUTIONS
 
 1. **Clonar el repositorio:**
    ```sh
-   git clone https://github.com/tuusuario/proyecto-naves.git
-   cd proyecto-naves
+   git clone https://github.com/eocana/actuasolutions_PT
+   cd actuasolutions_PT
    ```
 2. **Instalar dependencias:**
    ```sh
