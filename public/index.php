@@ -6,6 +6,7 @@ require __DIR__ . '/../includes/controllers/ShipController.php';
 use Dotenv\Dotenv;
 use App\Core\Router;
 use App\Controllers\ShipController;
+use App\Controllers\PicsumController; 
 
 // Debug mode
 ini_set('display_errors', 1);
@@ -45,6 +46,10 @@ if ($dbExists && $hasData) {
     Router::delete('ships/delete/{id}', [ShipController::class, 'delete']);
     Router::get('ships/add', [ShipController::class, 'create']);
     Router::post('ships/add', [ShipController::class, 'store']);
+    Router::get('picsum', [PicsumController::class, 'index']);
+    Router::post('picsum/download', [PicsumController::class, 'download']);
+
+    
     Router::dispatch();
     exit;
 }

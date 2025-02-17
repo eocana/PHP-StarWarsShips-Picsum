@@ -1,6 +1,7 @@
 <?php
 namespace App\Core;
-
+use App\Controllers\ShipController;
+use App\Controllers\PicsumController;
 /**
  * Clase Router que gestiona las rutas de la aplicación.
  * Permite registrar rutas HTTP (GET, POST, PUT, DELETE) y despachar las solicitudes a los controladores correspondientes.
