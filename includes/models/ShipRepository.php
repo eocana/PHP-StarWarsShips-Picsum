@@ -440,7 +440,7 @@ class ShipRepository {
     
             $this->db->exec('COMMIT');
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->db->exec('ROLLBACK');
             return false;
         }
